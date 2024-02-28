@@ -16,7 +16,6 @@ export class Post {
   created_at: Date
 
   @ManyToOne(() => User, (user) => user.posts)
-  // @JoinColumn()
   @JoinColumn({ name: 'author_id' }) //custom name
   user: User
 }
