@@ -17,8 +17,8 @@ export class UserService {
     return await this.userRepository.save(input)
   }
 
-  findAll() {
-    return `This action returns all user`;
+  public async findAll() {
+    return this.userRepository.find();
   }
 
   public async findOne(id: number) {

@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
   private readonly logger = new Logger(UserController.name)
@@ -31,8 +31,19 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  public async asyncfindAll() {
+    try {
+
+      const users = await this.userService.findAll();
+
+      this.logger.log(users)
+
+      return { statusCode: HttpStatus.OK, data: users };
+
+    } catch (error) {
+      this.logger.error(error)
+      throw new InternalServerErrorException()
+    }
   }
 
   @Get(':id')
