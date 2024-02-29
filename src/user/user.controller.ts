@@ -10,23 +10,15 @@ export class UserController {
 
   @Get()
   public async asyncfindAll() {
-    try {
-
       const users = await this.userService.findAll();
 
       this.logger.log(users)
 
       return { statusCode: HttpStatus.OK, data: users };
-
-    } catch (error) {
-      this.logger.error(error)
-      throw new InternalServerErrorException()
-    }
   }
 
   @Get(':id')
   public async findOne(@Param('id', ParseIntPipe) id: number) {
-    try {
       const user = await this.userService.findOne(id)
 
       if (!user) {
@@ -35,18 +27,12 @@ export class UserController {
       this.logger.log(user)
 
       return { statusCode: HttpStatus.OK, data: user };
-
-    } catch (error) {
-      this.logger.error(error)
-      throw new InternalServerErrorException()
-    }
   }
 
   @Post()
   @UsePipes(new ValidationPipe())
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() createUserDto: CreateUserDto) {
-    try {
       const newUser = await this.userService.create(createUserDto);
 
       if (!newUser) {
@@ -57,16 +43,10 @@ export class UserController {
 
       return { statusCode: HttpStatus.CREATED, message: "User successfully created", data: newUser };
 
-    } catch (error) {
-      this.logger.error(error)
-      throw new InternalServerErrorException()
-    }
   }
 
   @Patch(':id')
-  // @HttpCode(HttpStatus.NO_CONTENT)
   public async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    try {
       const user = await this.userService.findOne(id)
 
       if (!user) {
@@ -79,17 +59,11 @@ export class UserController {
         throw new InternalServerErrorException()
       }
 
-      return { statusCode: HttpStatus.NO_CONTENT, message: "User successfully updated" };
-
-    } catch (error) {
-      this.logger.error(error)
-      throw new InternalServerErrorException()
-    }
+      return { statusCode: HttpStatus.OK, message: "User successfully updated" };
   }
 
   @Delete(':id')
   public async remove(@Param('id', ParseIntPipe) id: number) {
-    // try {
       const user = await this.userService.findOne(id)
 
       if (!user) {
@@ -102,11 +76,6 @@ export class UserController {
         throw new InternalServerErrorException()
       }
 
-      return { statusCode: HttpStatus.NO_CONTENT, message: "User successfully deleted" };
-
-    // } catch (error) {
-    //   this.logger.error(error)
-    //   throw new InternalServerErrorException()
-    // }
+      return { statusCode: HttpStatus.OK, message: "User successfully deleted" };
   }
 }
