@@ -64,6 +64,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  // @HttpCode(HttpStatus.NO_CONTENT)
   public async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     try {
       const user = await this.userService.findOne(id)
@@ -74,7 +75,11 @@ export class UserController {
 
       const updateUser = await this.userService.update(updateUserDto)
 
-      return { statusCode: HttpStatus.OK, message: "User successfully update", data: updateUser };
+      if (!updateUser) {
+        throw new InternalServerErrorException()
+      }
+
+      return { statusCode: HttpStatus.NO_CONTENT, message: "User successfully updated" };
 
     } catch (error) {
       this.logger.error(error)
@@ -83,7 +88,25 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  public async remove(@Param('id', ParseIntPipe) id: number) {
+    // try {
+      const user = await this.userService.findOne(id)
+
+      if (!user) {
+        throw new NotFoundException('User does not exist');
+      }
+
+      const deleteUser = await this.userService.remove(id)
+
+      if (!deleteUser) {
+        throw new InternalServerErrorException()
+      }
+
+      return { statusCode: HttpStatus.NO_CONTENT, message: "User successfully deleted" };
+
+    // } catch (error) {
+    //   this.logger.error(error)
+    //   throw new InternalServerErrorException()
+    // }
   }
 }

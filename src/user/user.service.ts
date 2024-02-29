@@ -19,11 +19,11 @@ export class UserService {
   }
 
   public async findAll() {
-    return this.userRepository.find();
+    return await this.userRepository.find();
   }
 
   public async findOne(id: number) {
-    return this.userRepository.findOne({
+    return await this.userRepository.findOne({
       where: {
         id
       }
@@ -34,7 +34,7 @@ export class UserService {
     return await this.userRepository.save(input)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  public async  remove(id: number) {
+    return await this.userRepository.delete(id)
   }
 }
