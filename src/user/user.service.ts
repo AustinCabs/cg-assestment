@@ -11,7 +11,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
-  ){}
+  ) { }
 
   public async create(input: CreateUserDto): Promise<User> {
     return await this.userRepository.save(input)
@@ -21,8 +21,12 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  public async findOne(id: number) {
+    return this.userRepository.findOne({
+      where: {
+        id
+      }
+    })
   }
 
   update(id: number) {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UsePipes, HttpCode, HttpStatus, Logger, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UsePipes, HttpCode, HttpStatus, Logger, InternalServerErrorException, ParseIntPipe, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -36,8 +36,24 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  public async findOne(@Param('id', ParseIntPipe) id: number) {
+    try {
+      const user = await this.userService.findOne(id)
+
+      if (!user) {
+        throw new NotFoundException('User does not exist');
+      }
+      this.logger.log(user)
+
+      return { statusCode: HttpStatus.OK, data: user };
+
+    } catch (error) {
+      this.logger.error(error)
+      throw new InternalServerErrorException()
+    }
+
+
+
   }
 
   @Patch(':id')
