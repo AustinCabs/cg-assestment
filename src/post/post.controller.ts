@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, Logger, UsePipes, ValidationPipe, ParseIntPipe, HttpStatus, Put, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Logger, UsePipes, ValidationPipe, ParseIntPipe, HttpStatus, Put, InternalServerErrorException, Query, Res } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { QueryAuthorName } from './dto/query-params.dto';
 
 @Controller('posts')
 export class PostController {
@@ -9,7 +10,14 @@ export class PostController {
   private readonly logger = new Logger(PostController.name)
 
   @Get()
-  public async findAll() {
+  public async findAll(@Query() query: QueryAuthorName) {
+    this.logger.log(JSON.stringify(query))
+
+    if (typeof query.author !== 'undefined') {
+      const filterByName = await this.postService.getPostOfUserByName(query.author);
+      return { statusCode: HttpStatus.OK, data: filterByName };
+    }
+
     const posts = await this.postService.findAll();
     return { statusCode: HttpStatus.OK, data: posts };
   }

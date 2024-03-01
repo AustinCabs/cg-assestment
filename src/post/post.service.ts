@@ -48,6 +48,14 @@ export class PostService {
     return post
   }
 
+  public async getPostOfUserByName(name: string) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.posts', 'post')
+      .where('user.name = :name', { name })
+      .getMany();
+  }
+
   public async update(id: number, input: UpdatePostDto) {
     const post = await this.findOne(id)
 
