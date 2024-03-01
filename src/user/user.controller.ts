@@ -28,7 +28,8 @@ export class UserController {
 
   @Get(':id/posts')
   public async getUserPosts(@Param('id', ParseIntPipe) id: number) {
-    return await this.userService.getUserPosts(id)
+    const userPosts = await this.userService.getUserPosts(id)
+    return { statusCode: HttpStatus.OK, data: userPosts };
   }
 
   @Post()

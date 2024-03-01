@@ -75,9 +75,9 @@ export class PostService {
 
     const totalPages = Math.ceil(total / take);
     const previousPage = page > 1 ? page - 1 : null;
-    const nextPage = page < totalPages ? page + 1 : null;
+    const nextPage = page < totalPages ? Number(page) + 1 : null;
 
-    return { data, count: total, currentPage: page, totalPages, previousPage, nextPage };
+    return { data, count: total, currentPage: Number(page), totalPages, previousPage, nextPage };
   }
 
   public async update(id: number, input: UpdatePostDto) {
