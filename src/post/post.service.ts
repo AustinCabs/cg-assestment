@@ -16,12 +16,6 @@ export class PostService {
   public async create(input: CreatePostDto) {
     const user = await this.userService.findOne(input.userId)
 
-    if (!user)
-    throw new HttpException(
-      'User not found. Cannot create Profile',
-      HttpStatus.BAD_REQUEST,
-    );
-
     const newPost = await this.postRepository.create({
       ...input,
       user
@@ -30,14 +24,9 @@ export class PostService {
     return this.postRepository.save(newPost)
   }
 
-  findAll() {
-    return `This action returns all post`;
-  }
+  public async getPostByUserId(id: number) {
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
   }
-
   update(id: number, updatePostDto: UpdatePostDto) {
     return `This action updates a #${id} post`;
   }
