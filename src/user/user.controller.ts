@@ -26,6 +26,11 @@ export class UserController {
     return { statusCode: HttpStatus.OK, data: user };
   }
 
+  @Get(':id/posts')
+  public async getUserPosts(@Param('id', ParseIntPipe) id: number){
+    return await this.userService.getUserPosts(id)
+  }
+
   @Post()
   @UsePipes(new ValidationPipe())
   @HttpCode(HttpStatus.CREATED)

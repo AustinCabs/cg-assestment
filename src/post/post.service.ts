@@ -28,23 +28,6 @@ export class PostService {
     return this.postRepository.save(newPost)
   }
 
-  public async getPostByUserId(id: number) {
-    const user = await this.userRepository.findOne({
-      where: {
-        id
-      },
-      relations: ['posts']
-    })
-
-    if (!user)
-      throw new HttpException(
-        'User does not exist',
-        HttpStatus.BAD_REQUEST,
-      );
-
-    return user
-  }
-
   public async findAll() {
     return this.postRepository.find()
   }

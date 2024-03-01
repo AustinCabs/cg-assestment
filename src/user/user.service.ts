@@ -37,6 +37,23 @@ export class UserService {
     return user
   }
 
+  public async getUserPosts(id: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id
+      },
+      relations: ['posts']
+    })
+
+    if (!user)
+      throw new HttpException(
+        'User does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    return user
+  }
+
   public async update(id: number, input: UpdateUserDto) {
     const user = await this.findOne(id)
 
