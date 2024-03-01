@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, UsePipes, ValidationPipe, ParseIntPipe, HttpStatus } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -11,8 +11,9 @@ export class PostController {
   @Post()
   @UsePipes(new ValidationPipe())
   public async create(@Body() createPostDto: CreatePostDto) {
-    this.logger.log(createPostDto)
-    return await this.postService.create(createPostDto);
+    const createdPost = await this.postService.create(createPostDto);
+    const { user, ...rest } = createdPost
+    return { statusCode: HttpStatus.CREATED, message: "Post successfully created", data: rest };
   }
 
   @Get()
@@ -20,9 +21,9 @@ export class PostController {
     return this.postService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
+  @Get(':id/users')
+  public async getPostByUserId(@Param('id', ParseIntPipe) id: number) {
+    return this.postService.getPostByUserId(id)
   }
 
   @Patch(':id')
