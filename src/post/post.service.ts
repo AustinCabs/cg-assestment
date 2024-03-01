@@ -32,6 +32,22 @@ export class PostService {
     return this.postRepository.find()
   }
 
+  public async findOne(id: number) {
+    const post = await this.postRepository.findOne({
+      where: {
+        id
+      }
+    })
+
+    if (!post)
+      throw new HttpException(
+        'Post does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    return post
+  }
+
   update(id: number, updatePostDto: UpdatePostDto) {
     return `This action updates a #${id} post`;
   }
