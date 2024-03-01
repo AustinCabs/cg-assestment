@@ -1,11 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-
+import { InjectRepository } from '@nestjs/typeorm';
+import { Post } from './entities/post.entity';
+import { Repository } from 'typeorm'
+import { UserService } from 'src/user/user.service';
 @Injectable()
 export class PostService {
-  create(createPostDto: CreatePostDto) {
-    return 'This action adds a new post';
+  constructor(
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
+    private userService: UserService
+  ) { }
+
+  public async create(input: CreatePostDto) {
+    const user = await this.userService.findOne(input.userId)
+
+    if (!user)
+    throw new HttpException(
+      'User not found. Cannot create Profile',
+      HttpStatus.BAD_REQUEST,
+    );
+
+    const newPost = await this.postRepository.create({
+      ...input,
+      user
+    })
+
+    return this.postRepository.save(newPost)
   }
 
   findAll() {

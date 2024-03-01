@@ -1,9 +1,9 @@
 import { User } from "src/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Post {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number
 
   @Column()
@@ -15,9 +15,9 @@ export class Post {
   @CreateDateColumn()
   created_at: Date
 
-  @ManyToOne(() => User, (user) => user.posts,{
-    nullable: true
+  @ManyToOne(() => User, (user) => user.posts, {
+    onDelete: 'CASCADE',
+    nullable: false
   })
-  @JoinColumn({ name: 'author_id' })
   user: User
 }

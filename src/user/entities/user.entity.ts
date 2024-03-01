@@ -10,7 +10,7 @@ export class User {
   name: string
 
   @OneToMany(() => Post, (post) => post.user, {
-    cascade:true
+    cascade: true
   })
   posts: Post[]
 }

@@ -1,15 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
-@Controller('post')
+@Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
+  private readonly logger = new Logger(PostController.name)
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+  @UsePipes(new ValidationPipe())
+  public async create(@Body() createPostDto: CreatePostDto) {
+    this.logger.log(createPostDto)
+    return await this.postService.create(createPostDto);
   }
 
   @Get()
