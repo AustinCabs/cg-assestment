@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, UsePipes, ValidationPipe, ParseIntPipe, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, UsePipes, ValidationPipe, ParseIntPipe, HttpStatus, Put } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -28,9 +28,11 @@ export class PostController {
     return { statusCode: HttpStatus.CREATED, message: "Post successfully created", data: rest };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
+  @Put(':id')
+  public async update(@Param('id', ParseIntPipe) id: number, @Body() updatePostDto: UpdatePostDto) {
+    const updatePost = this.postService.update(id, updatePostDto);
+    this.logger.log(JSON.stringify(updatePost))
+    return { statusCode: HttpStatus.OK, message: "Post successfully update" };
   }
 
   @Delete(':id')

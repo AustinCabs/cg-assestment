@@ -48,8 +48,16 @@ export class PostService {
     return post
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  public async update(id: number, input: UpdatePostDto) {
+    const post = await this.findOne(id)
+
+    if (!post) {
+      throw new InternalServerErrorException()
+    }
+
+    const mergePost = this.postRepository.merge(post, input)
+
+    return this.postRepository.save(mergePost)
   }
 
   remove(id: number) {

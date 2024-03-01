@@ -27,7 +27,7 @@ export class UserController {
   }
 
   @Get(':id/posts')
-  public async getUserPosts(@Param('id', ParseIntPipe) id: number){
+  public async getUserPosts(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserPosts(id)
   }
 
