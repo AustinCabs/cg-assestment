@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, UsePipes, ValidationPipe, ParseIntPipe, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Logger, UsePipes, ValidationPipe, ParseIntPipe, HttpStatus, Put, InternalServerErrorException } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -36,7 +36,13 @@ export class PostController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  public async remove(@Param('id', ParseIntPipe) id: number) {
+    const deleteUser = await this.postService.remove(id)
+
+    if (!deleteUser) {
+      throw new InternalServerErrorException()
+    }
+
+    return { statusCode: HttpStatus.OK, message: "User successfully deleted" };
   }
 }

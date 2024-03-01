@@ -60,7 +60,13 @@ export class PostService {
     return this.postRepository.save(mergePost)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  public async remove(id: number) {
+    const post = await this.findOne(id)
+
+    if (!post) {
+      throw new InternalServerErrorException()
+    }
+
+    return await this.postRepository.delete(id)
   }
 }
