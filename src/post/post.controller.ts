@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Param, Delete, Logger, UsePipes, Validatio
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { QueryAuthorName } from './dto/query-params.dto';
 
 @Controller('posts')
 export class PostController {
@@ -10,12 +9,33 @@ export class PostController {
   private readonly logger = new Logger(PostController.name)
 
   @Get()
-  public async findAll(@Query() query: QueryAuthorName) {
+  public async findAll(@Query() query) {
     this.logger.log(JSON.stringify(query))
 
-    if (typeof query.author !== 'undefined') {
+    if (typeof query.author !== 'undefined'
+      && typeof query.page === 'undefined'
+      && typeof query.take === 'undefined') {
+      this.logger.warn("search author works")
       const filterByName = await this.postService.getPostOfUserByName(query.author);
       return { statusCode: HttpStatus.OK, data: filterByName };
+    }
+
+    if (typeof query.author === 'undefined'
+      && typeof query.page !== 'undefined'
+      && typeof query.take !== 'undefined') {
+      this.logger.warn("Paginate works")
+      const paginatedData = await this.postService.getPaginatePost({ page: query.page, take: query.take })
+      console.log('# paginate', paginatedData)
+      const { data, previousPage, currentPage, totalPages, count, nextPage, } = paginatedData
+      return {
+        statusCode: HttpStatus.OK,
+        currentPage,
+        previousPage,
+        nextPage,
+        totalPages,
+        count,
+        data
+      };
     }
 
     const posts = await this.postService.findAll();

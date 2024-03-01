@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm'
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
+import { IPaginatePost } from './types';
 
 @Injectable()
 export class PostService {
@@ -16,6 +17,8 @@ export class PostService {
     private readonly userRepository: Repository<User>,
     private userService: UserService
   ) { }
+
+  private readonly logger = new Logger(PostService.name)
 
   public async create(input: CreatePostDto) {
     const user = await this.userService.findOne(input.userId)
@@ -54,6 +57,27 @@ export class PostService {
       .leftJoinAndSelect('user.posts', 'post')
       .where('user.name = :name', { name })
       .getMany();
+  }
+
+
+  public async getPaginatePost(query): Promise<IPaginatePost> {
+    const take = query.take || 10;
+    const page = query.page || 1;
+    const skip = (page - 1) * take;
+
+    const builder = this.postRepository.createQueryBuilder('post');
+    const total = await builder.getCount();
+    const data = await builder
+      .orderBy('id', 'ASC')
+      .skip(skip)
+      .take(take)
+      .getMany();
+
+    const totalPages = Math.ceil(total / take);
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    return { data, count: total, currentPage: page, totalPages, previousPage, nextPage };
   }
 
   public async update(id: number, input: UpdatePostDto) {
