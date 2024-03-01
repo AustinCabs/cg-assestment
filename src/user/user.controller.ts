@@ -10,72 +10,57 @@ export class UserController {
 
   @Get()
   public async asyncfindAll() {
-      const users = await this.userService.findAll();
+    const users = await this.userService.findAll();
 
-      this.logger.log(users)
+    this.logger.log(users)
 
-      return { statusCode: HttpStatus.OK, data: users };
+    return { statusCode: HttpStatus.OK, data: users };
   }
 
   @Get(':id')
   public async findOne(@Param('id', ParseIntPipe) id: number) {
-      const user = await this.userService.findOne(id)
+    const user = await this.userService.findOne(id)
 
-      if (!user) {
-        throw new NotFoundException('User does not exist');
-      }
-      this.logger.log(user)
+    this.logger.log(JSON.stringify(user))
 
-      return { statusCode: HttpStatus.OK, data: user };
+    return { statusCode: HttpStatus.OK, data: user };
   }
 
   @Post()
   @UsePipes(new ValidationPipe())
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() createUserDto: CreateUserDto) {
-      const newUser = await this.userService.create(createUserDto);
+    const newUser = await this.userService.create(createUserDto);
 
-      if (!newUser) {
-        throw new InternalServerErrorException()
-      }
+    if (!newUser) {
+      throw new InternalServerErrorException()
+    }
 
-      this.logger.log(newUser)
+    this.logger.log(newUser)
 
-      return { statusCode: HttpStatus.CREATED, message: "User successfully created", data: newUser };
+    return { statusCode: HttpStatus.CREATED, message: "User successfully created", data: newUser };
 
   }
 
   @Patch(':id')
   public async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-      const user = await this.userService.findOne(id)
+    const updateUser = await this.userService.update(id, updateUserDto)
 
-      if (!user) {
-        throw new NotFoundException('User does not exist');
-      }
+    if (!updateUser) {
+      throw new InternalServerErrorException()
+    }
 
-      const updateUser = await this.userService.update(updateUserDto)
-
-      if (!updateUser) {
-        throw new InternalServerErrorException()
-      }
-
-      return { statusCode: HttpStatus.OK, message: "User successfully updated" };
+    return { statusCode: HttpStatus.OK, message: "User successfully updated" };
   }
 
   @Delete(':id')
   public async remove(@Param('id', ParseIntPipe) id: number) {
-      const user = await this.userService.findOne(id)
+    const deleteUser = await this.userService.remove(id)
 
-      if (!user) {
-        throw new NotFoundException('User does not exist');
-      }
+    if (!deleteUser) {
+      throw new InternalServerErrorException()
+    }
 
-      const deleteUser = await this.userService.remove(id)
-
-      if (!deleteUser) {
-        throw new InternalServerErrorException()
-      }
-
-      return { statusCode: HttpStatus.OK, message: "User successfully deleted" };
+    return { statusCode: HttpStatus.OK, message: "User successfully deleted" };
   }
 }
