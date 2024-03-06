@@ -7,14 +7,15 @@ import { AuthController } from './auth.controller';
 import { LocalStrategy } from './local-strategy';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from 'src/config/jwt.config';
+import { JwtStrategy } from './jwt-strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]),
-   JwtModule.registerAsync({
+  JwtModule.registerAsync({
     useFactory: jwtConfig
-   })
-],
-  providers: [UserService, AuthService, LocalStrategy],
+  })
+  ],
+  providers: [UserService, AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController]
 })
 export class AuthModule { }
