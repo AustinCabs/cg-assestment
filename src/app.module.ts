@@ -7,6 +7,9 @@ import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 import typeOrmConfig from './config/typeOrm.config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -16,7 +19,17 @@ import typeOrmConfig from './config/typeOrm.config';
     })
     , TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig
-    }), UserModule, PostModule, AuthModule,
+    })
+    ,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      typePaths: ['./**/*.graphql'],
+      definitions: {
+        path: join(process.cwd(), 'src/graphql.ts'),
+      }
+    })
+    ,
+    UserModule, PostModule, AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
