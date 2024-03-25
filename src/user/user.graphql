@@ -5,6 +5,17 @@ type User {
     name: String!
 }
 
+input UserCreateInput {
+    username: String!
+    password: String!
+    name: String!
+}
+
 type Query {
-    getUser: User!
+    getTestUser: User!
+    getUsers: [User!]
+}
+
+type Mutation {
+     createUser(input:UserCreateInput!): User!
 }
