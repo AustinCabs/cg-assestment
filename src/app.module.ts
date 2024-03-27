@@ -26,7 +26,23 @@ import { join } from 'path';
       typePaths: ['./**/*.graphql'],
       definitions: {
         path: join(process.cwd(), 'src/graphql.ts'),
-      }
+      },
+      formatError: (error) => {
+        const originalError = error.extensions
+          ?.originalError as any;
+       
+        if (!originalError) {
+          return {
+            message: error.message,
+            code: error.extensions?.code,
+          };
+        }
+        return {
+          message: originalError.message,
+          code: error.extensions?.code,
+          statusCode: originalError.statusCode
+        };
+      },
     })
     ,
     UserModule, PostModule, AuthModule,
